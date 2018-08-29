@@ -1,14 +1,14 @@
 package com.reddit.presentation.mvp.global
 
-import javax.inject.Inject
-
 import io.reactivex.CompletableTransformer
 import io.reactivex.ObservableTransformer
 import io.reactivex.Scheduler
 import io.reactivex.SingleTransformer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
+@Suppress("unused")
 class SchedulersProvider @Inject constructor() {
 
     fun ioToMainTransformerCompletable(): CompletableTransformer {

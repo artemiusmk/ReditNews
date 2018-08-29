@@ -1,84 +1,73 @@
 package com.reddit.presentation.ui.main
 
-import android.arch.lifecycle.Observer
-import android.arch.lifecycle.ViewModelProvider
-import android.arch.lifecycle.ViewModelProviders
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import com.reddit.R
 import com.reddit.RedditApp
-import com.reddit.presentation.global.extensions.androidLazy
+import com.reddit.domain.RedditNewsItem
 import com.reddit.presentation.mvp.main.MainViewModel
-import com.reddit.presentation.ui.global.InfiniteScrollListener
+import com.reddit.presentation.ui.global.AbsMvvmActivity
+import com.reddit.presentation.ui.global.utils.Launcher
+import com.reddit.presentation.ui.global.utils.initNewsList
 import com.reddit.presentation.ui.main.adapter.NewsAdapter
 import com.reddit.presentation.ui.main.adapter.NewsDelegateAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), NewsDelegateAdapter.OnViewSelectedListener {
+class MainActivity : AbsMvvmActivity<MainViewModel>(), NewsDelegateAdapter.OnViewSelectedListener {
+    private lateinit var adapter: NewsAdapter
 
-    private val newsAdapter by androidLazy { NewsAdapter(this) }
+    override fun provideViewModelClass() = MainViewModel::class.java
 
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-    private var viewModel: MainViewModel? = null
+    override fun provideLayoutResId() = R.layout.activity_main
+
+    override fun initInjection() {
+        RedditApp.mainComponent.inject(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        setupActionBar()
-
-        RedditApp.mainComponent.inject(this)
+        initActionBar()
 
         setupRecyclerView()
-        setupViewModel()
+        loadNews()
     }
 
-    private fun setupActionBar() {
+    private fun initActionBar() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setIcon(R.drawable.reddit_icon)
         supportActionBar?.title = " " + getString(R.string.app_name)
     }
 
     private fun setupRecyclerView() {
-        news_list.apply {
-            setHasFixedSize(true)
-            val linearLayout = LinearLayoutManager(context)
-            layoutManager = linearLayout
-            clearOnScrollListeners()
-            addOnScrollListener(InfiniteScrollListener({
-                viewModel?.getOlderNews() }, linearLayout))
-        }
-        news_list.adapter = newsAdapter
+        adapter = NewsAdapter(this)
+        rvNews.initNewsList { loadNewsList() }
+        rvNews.adapter = adapter
     }
 
-    private fun setupViewModel() {
-        viewModel = ViewModelProviders.of(this, viewModelFactory).get(MainViewModel::class.java)
-        viewModel?.lastNews?.observe(this, Observer {
-            if (it != null) {
-                newsAdapter.addNews(it)
-            }
-        })
-        viewModel?.error?.observe(this, Observer { it ->
-            Snackbar.make(news_list, it.orEmpty(), Snackbar.LENGTH_INDEFINITE)
-                    .setAction("RETRY") { viewModel?.getOlderNews() }
-                    .show()
-        })
-        val lastNews = viewModel?.news?.value.orEmpty()
-        newsAdapter.addNews(lastNews.flatMap { it.news })
+    private fun loadNews() {
+        adapter.addNews(viewModel.getNewsListOrEmpty())
+        viewModel.error.observeLiveDataNullSafety(this::onLastNewError)
+        viewModel.lastNews.observeLiveDataNullSafety(this::onLastNewsAdded)
+    }
+
+    private fun onLastNewsAdded(news: List<RedditNewsItem>) {
+        adapter.addNews(news)
+    }
+
+    private fun onLastNewError(error: String) {
+        showRetrySnackbar(rvNews, error) {
+            loadNewsList()
+        }
     }
 
     override fun onItemSelected(url: String?) {
         if (url.isNullOrEmpty()) {
-            Snackbar.make(news_list, "No URL assigned to this news", Snackbar.LENGTH_LONG).show()
+            showSnackbar(rvNews, getString(R.string.error_invalid_news_url))
         } else {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(url)
-            startActivity(intent)
+            Launcher.openUrl(this, url!!)
         }
+    }
+
+    private fun loadNewsList() {
+        viewModel.getOlderNews()
     }
 }

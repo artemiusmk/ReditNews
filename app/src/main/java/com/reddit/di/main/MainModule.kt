@@ -10,7 +10,6 @@ import javax.inject.Singleton
 
 @Module
 class MainModule {
-
     @Provides
     @Singleton
     fun provideNewsAPI(redditApi: RedditApi): NewsAPI = NewsRestAPI(redditApi)

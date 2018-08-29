@@ -1,4 +1,5 @@
 @file:JvmName("ExtensionsUtils")
+@file:Suppress("unused")
 
 package com.reddit.presentation.global.extensions
 
@@ -9,7 +10,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import com.reddit.R
 import com.squareup.picasso.Picasso
-
 
 fun ViewGroup.inflate(layoutId: Int, attachToRoot: Boolean = false): View {
     return LayoutInflater.from(context).inflate(layoutId, this, attachToRoot)
@@ -23,4 +23,4 @@ fun ImageView.loadImg(imageUrl: String) {
     }
 }
 
-fun <T> androidLazy(initializer: () -> T) : Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)
+fun <T> androidLazy(initializer: () -> T): Lazy<T> = lazy(LazyThreadSafetyMode.NONE, initializer)

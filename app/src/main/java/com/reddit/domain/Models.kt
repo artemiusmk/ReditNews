@@ -1,6 +1,6 @@
 package com.reddit.domain
 
-import com.reddit.presentation.ui.global.adapter.AdapterConstants
+import com.reddit.presentation.ui.global.adapter.NEWS
 import com.reddit.presentation.ui.global.adapter.ViewType
 
 data class RedditNews(
@@ -17,5 +17,5 @@ data class RedditNewsItem(
         val thumbnail: String,
         val url: String?
 ) : ViewType {
-    override fun getViewType() = AdapterConstants.NEWS
+    override fun getViewType() = NEWS
 }

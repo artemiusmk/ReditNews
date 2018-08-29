@@ -12,11 +12,6 @@ import com.reddit.presentation.ui.global.adapter.ViewTypeDelegateAdapter
 import kotlinx.android.synthetic.main.news_item.view.*
 
 class NewsDelegateAdapter(val viewActions: OnViewSelectedListener) : ViewTypeDelegateAdapter {
-
-    interface OnViewSelectedListener {
-        fun onItemSelected(url: String?)
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup): RecyclerView.ViewHolder {
         return NewsViewHolder(parent)
     }
@@ -44,5 +39,9 @@ class NewsDelegateAdapter(val viewActions: OnViewSelectedListener) : ViewTypeDel
 
             super.itemView.setOnClickListener { viewActions.onItemSelected(item.url)}
         }
+    }
+
+    interface OnViewSelectedListener {
+        fun onItemSelected(url: String?)
     }
 }

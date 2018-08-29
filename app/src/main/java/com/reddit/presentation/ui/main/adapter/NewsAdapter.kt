@@ -4,7 +4,8 @@ import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.reddit.domain.RedditNewsItem
-import com.reddit.presentation.ui.global.adapter.AdapterConstants
+import com.reddit.presentation.ui.global.adapter.LOADING
+import com.reddit.presentation.ui.global.adapter.NEWS
 import com.reddit.presentation.ui.global.adapter.ViewType
 import com.reddit.presentation.ui.global.adapter.ViewTypeDelegateAdapter
 import java.util.*
@@ -14,12 +15,12 @@ class NewsAdapter(listener: NewsDelegateAdapter.OnViewSelectedListener) : Recycl
     private var items: ArrayList<ViewType>
     private var delegateAdapters = SparseArrayCompat<ViewTypeDelegateAdapter>()
     private val loadingItem = object : ViewType {
-        override fun getViewType() = AdapterConstants.LOADING
+        override fun getViewType() = LOADING
     }
 
     init {
-        delegateAdapters.put(AdapterConstants.LOADING, LoadingDelegateAdapter())
-        delegateAdapters.put(AdapterConstants.NEWS, NewsDelegateAdapter(listener))
+        delegateAdapters.put(LOADING, LoadingDelegateAdapter())
+        delegateAdapters.put(NEWS, NewsDelegateAdapter(listener))
         items = ArrayList()
         items.add(loadingItem)
     }
@@ -64,7 +65,7 @@ class NewsAdapter(listener: NewsDelegateAdapter.OnViewSelectedListener) : Recycl
 
     fun getNews(): List<RedditNewsItem> =
             items
-                .filter { it.getViewType() == AdapterConstants.NEWS }
+                    .filter { it.getViewType() == NEWS }
                 .map { it as RedditNewsItem }
 
 

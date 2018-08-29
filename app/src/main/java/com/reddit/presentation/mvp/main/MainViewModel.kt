@@ -11,15 +11,19 @@ import com.reddit.presentation.mvp.global.SchedulersProvider
 import io.reactivex.disposables.Disposable
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(private var mainInteractor: MainInteractor,
-                                        private val schedulersProvider: SchedulersProvider,
-                                        private val errorHandler: ErrorHandler) : ViewModel() {
-
+class MainViewModel
+@Inject constructor(
+        private var mainInteractor: MainInteractor,
+        private val schedulersProvider: SchedulersProvider,
+        private val errorHandler: ErrorHandler
+) : ViewModel() {
     val error = SingleLiveEvent<String>()
     val lastNews = SingleLiveEvent<List<RedditNewsItem>>()
-    val news = MutableLiveData<List<RedditNews>>()
+    private val news = MutableLiveData<List<RedditNews>>()
     private var disposable: Disposable? = null
     private var cachedNews = mutableListOf<RedditNews>()
+    private val after: String
+        get() = news.value?.last()?.after.orEmpty()
 
     init {
         getOlderNews()
@@ -27,17 +31,25 @@ class MainViewModel @Inject constructor(private var mainInteractor: MainInteract
 
     fun getOlderNews() {
         disposable?.dispose()
-        disposable = mainInteractor.getOlderNews(news.value?.last()?.after.orEmpty())
+        disposable = mainInteractor.getOlderNews(after)
                 .compose(schedulersProvider.getIOToMainTransformer())
                 .subscribe(
-                        {
-                            cachedNews.add(it)
-                            news.value = cachedNews
-                            lastNews.value = it.news
-                        }, {
-                    error.value = errorHandler.parseError(it)
-                        }
-                )
+                        this::onNewsLoaded,
+                        this::onNewsLoadingFailure)
+    }
+
+    private fun onNewsLoaded(redditNews: RedditNews) {
+        cachedNews.add(redditNews)
+        news.value = cachedNews
+        lastNews.value = redditNews.news
+    }
+
+    fun getNewsListOrEmpty(): List<RedditNewsItem> {
+        return news.value.orEmpty().flatMap { it.news }
+    }
+
+    private fun onNewsLoadingFailure(e: Throwable) {
+        error.value = errorHandler.parseError(e)
     }
 
     override fun onCleared() {

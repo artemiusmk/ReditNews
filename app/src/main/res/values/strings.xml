@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">RedditNews</string>
+    <string name="msg_retry">RETRY</string>
+    <string name="error_invalid_news_url">No URL assigned to this news</string>
+    <string name="error_network">Network error. Check your connection</string>
+    <string name="error_operation_failed">App error. Operation failed</string>
 </resources>
