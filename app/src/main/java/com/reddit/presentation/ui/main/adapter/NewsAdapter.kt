@@ -2,14 +2,12 @@ package com.reddit.presentation.ui.main.adapter
 
 import android.support.v4.util.SparseArrayCompat
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.ViewGroup
 import com.reddit.domain.RedditNewsItem
 import com.reddit.presentation.ui.global.adapter.AdapterConstants
 import com.reddit.presentation.ui.global.adapter.ViewType
 import com.reddit.presentation.ui.global.adapter.ViewTypeDelegateAdapter
 import java.util.*
-import android.support.v7.util.DiffUtil
 
 class NewsAdapter(listener: NewsDelegateAdapter.OnViewSelectedListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 

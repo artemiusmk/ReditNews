@@ -11,11 +11,11 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import com.reddit.R
 import com.reddit.RedditApp
-import com.reddit.presentation.ui.global.InfiniteScrollListener
 import com.reddit.presentation.global.extensions.androidLazy
+import com.reddit.presentation.mvp.main.MainViewModel
+import com.reddit.presentation.ui.global.InfiniteScrollListener
 import com.reddit.presentation.ui.main.adapter.NewsAdapter
 import com.reddit.presentation.ui.main.adapter.NewsDelegateAdapter
-import com.reddit.presentation.mvp.main.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -63,8 +63,8 @@ class MainActivity : AppCompatActivity(), NewsDelegateAdapter.OnViewSelectedList
                 newsAdapter.addNews(it)
             }
         })
-        viewModel?.error?.observe(this, Observer {
-            Snackbar.make(news_list, it.orEmpty(), Snackbar.LENGTH_LONG)
+        viewModel?.error?.observe(this, Observer { it ->
+            Snackbar.make(news_list, it.orEmpty(), Snackbar.LENGTH_INDEFINITE)
                     .setAction("RETRY") { viewModel?.getOlderNews() }
                     .show()
         })
