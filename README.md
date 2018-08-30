@@ -1,4 +1,6 @@
-## Libraries used:
+Clean Architecture and Android Architecture components example
+
+### Libraries used:
 - Retrofit 2.0
 - RxJava 2
 - Picasso

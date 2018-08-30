@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 import com.reddit.R
 import com.reddit.domain.RedditNewsItem
-import com.reddit.presentation.global.extensions.getFriendlyTime
+import com.reddit.presentation.global.extensions.getAgoTimeFromSec
 import com.reddit.presentation.global.extensions.inflate
 import com.reddit.presentation.global.extensions.loadImg
 import com.reddit.presentation.ui.global.adapter.ViewType
@@ -35,7 +35,7 @@ class NewsDelegateAdapter(val viewActions: OnViewSelectedListener) : ViewTypeDel
             description.text = item.title
             author.text = item.author
             comments.text = "${item.numComments} comments"
-            time.text = item.created.getFriendlyTime()
+            time.text = item.created.getAgoTimeFromSec()
 
             super.itemView.setOnClickListener { viewActions.onItemSelected(item.url)}
         }
